@@ -1,22 +1,24 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { PollingServiceService } from './polling-service.service';
+import { Component, inject } from '@angular/core';
+import { of } from 'rxjs';
+
+import { PollingService } from './polling.service';
 
 @Component({
   selector: 'app-demo',
   imports: [],
   templateUrl: './demo.component.html',
 })
-export class DemoComponent implements OnInit {
-  private pollingService = inject(PollingServiceService);
-
-  ngOnInit(): void {
-  }
+export class DemoComponent {
+  private pollingService = inject(PollingService);
 
   startPolling() {
-    this.pollingService.startPolling();
+    const myPollingFunction = (a: number) => {
+      return of(`My custom polling - ${a * 2}`);
+    };
+
+    this.pollingService.startPolling(myPollingFunction);
   }
   stopPolling() {
     this.pollingService.stopPolling();
   }
-
 }
