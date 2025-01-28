@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "dist/data-polling-service/browser",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
