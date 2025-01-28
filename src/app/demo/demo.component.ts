@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { of } from 'rxjs';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { of, Subscription } from 'rxjs';
 
 import { PollingService } from './polling.service';
 
@@ -8,17 +8,26 @@ import { PollingService } from './polling.service';
   imports: [],
   templateUrl: './demo.component.html',
 })
-export class DemoComponent {
-  private pollingService = inject(PollingService);
+export class DemoComponent implements OnInit, OnDestroy {
+  private pollingSubscription!: Subscription;
+  private readonly pollingService: PollingService = inject(PollingService);
 
-  startPolling() {
-    const myPollingFunction = (a: number) => {
-      return of(`My custom polling - ${a * 2}`);
-    };
-
-    this.pollingService.startPolling(myPollingFunction);
+  ngOnInit(): void {
+    this.startCustomPolling();
   }
-  stopPolling() {
-    this.pollingService.stopPolling();
+
+  ngOnDestroy(): void {
+    this.pollingSubscription?.unsubscribe();
+  }
+
+  private startCustomPolling(): void {
+    const polling$ = this.pollingService.createPolling<string>(
+      () => of(`My custom polling`)
+    );
+
+    this.pollingSubscription = polling$.subscribe({
+      next: (result) => console.log('Received:', result),
+      error: (err) => console.error('Component error:', err)
+    });
   }
 }
